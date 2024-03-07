@@ -1,6 +1,6 @@
 intercepts:
 
-- class: halucinator.bp_handlers.IPythonShell 
+- class: halucinator.bp_handlers.IPythonShell
   function: HardFault_Handler
   symbol: HardFault_Handler
 
@@ -17,23 +17,23 @@ intercepts:
   function: HAL_ADC_GetValue
   symbol: HAL_ADC_GetValue
 # ADC setup/misc that can be safely ignored
-- class: halucinator.bp_handlers.ReturnZero 
+- class: halucinator.bp_handlers.ReturnZero
   function: HAL_ADC_Start
   symbol: HAL_ADC_Start
-- class: halucinator.bp_handlers.ReturnZero 
+- class: halucinator.bp_handlers.ReturnZero
   function: HAL_ADC_PollForConversion
   symbol: HAL_ADC_PollForConversion
 # gpio setup that can be safely ignored
-- class: halucinator.bp_handlers.ReturnZero 
+- class: halucinator.bp_handlers.ReturnZero
   function: HAL_GPIO_Init
   symbol: HAL_GPIO_Init
 # ----------------------------------------------------------------------------
 
 # -------------------------------UART ----------------------------------------
-- class: halucinator.bp_handlers.stm32f4.stm32f4_uart.STM32F4UART 
+- class: halucinator.bp_handlers.stm32f4.stm32f4_uart.STM32F4UART
   function: HAL_UART_Init
   symbol: HAL_UART_Init
-- class: halucinator.bp_handlers.stm32f4.stm32f4_uart.STM32F4UART 
+- class: halucinator.bp_handlers.stm32f4.stm32f4_uart.STM32F4UART
   function: HAL_UART_GetState
   symbol: HAL_UART_GetState
 - class: halucinator.bp_handlers.stm32f4.stm32f4_uart.STM32F4UART
@@ -56,30 +56,33 @@ intercepts:
   symbol: HAL_UART_Receive_DMA
 # ----------------------------------------------------------------------------
 
-# -------------------------------Generic ------------------------------------
-
-- class: halucinator.bp_handlers.SkipFunc
+# ------------------------------- Timers ------------------------------------
+- class: halucinator.bp_handlers.stm32f4.stm32f4_timer.STM32_Timer
   function: HAL_Delay
   symbol: HAL_Delay
-- class: halucinator.bp_handlers.generic.timer.Timer
+- class: halucinator.bp_handlers.stm32f4.stm32f4_timer.STM32_Timer
   function: HAL_GetTick
   symbol: HAL_GetTick
-- class: halucinator.bp_handlers.ReturnZero 
+# ----------------------------------------------------------------------------
+
+# -------------------------------Generic ------------------------------------
+
+- class: halucinator.bp_handlers.ReturnZero
   function: HAL_Init
   symbol: HAL_Init
 - class: halucinator.bp_handlers.ReturnZero
   function: HAL_InitTick
   symbol: HAL_InitTick
-- class: halucinator.bp_handlers.Counter 
+- class: halucinator.bp_handlers.ReturnZero
   function: HAL_IncTick
   symbol: HAL_IncTick
-- class: halucinator.bp_handlers.ReturnZero 
+- class: halucinator.bp_handlers.ReturnZero
   function: HAL_MspInit
   symbol: HAL_MspInit
 
-- class: halucinator.bp_handlers.ReturnZero 
+- class: halucinator.bp_handlers.ReturnZero
   function: HAL_RCC_ClockConfig
   symbol: HAL_RCC_ClockConfig
-- class: halucinator.bp_handlers.ReturnZero 
+- class: halucinator.bp_handlers.ReturnZero
   function: HAL_RCC_OscConfig
   symbol: HAL_RCC_OscConfig

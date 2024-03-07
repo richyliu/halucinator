@@ -12,19 +12,26 @@ def uart_write_handler(ioserver, msg):
     txt = msg['chars'].decode('latin-1')
     print(f'UART output: "{txt.strip()}"')
 
-class GPIOServer(object):
+class LocalServer(object):
     def __init__(self, ioserver):
         self.ioserver = ioserver
-        ioserver.register_topic(
-            'Peripheral.GPIO.write_pin', self.write_handler)
-        ioserver.register_topic(
-            'Peripheral.GPIO.toggle_pin', self.write_handler)
+        ioserver.register_topic('Peripheral.GPIO.write_pin', self.write_handler)
+        ioserver.register_topic('Peripheral.GPIO.toggle_pin', self.write_handler)
+        ioserver.register_topic('Peripheral.ExternalTimer.delay', self.delay)
+        self.current_time = 0
 
     def write_handler(self, ioserver, msg):
         global global_heater_on
         state = msg['value'] == 1
         global_heater_on = state
         print('pin output:', state)
+
+    def delay(self, ioserver, msg):
+        delay = msg['value']
+        self.current_time += delay
+        # update time
+        d = {'value': self.current_time}
+        self.ioserver.send_msg('Peripheral.ExternalTimer.update_time', d)
 
 
 def main():
@@ -37,7 +44,7 @@ def main():
     args = p.parse_args()
 
     io_server = IOServer(args.rx_port, args.tx_port)
-    gpio = GPIOServer(io_server)
+    LocalServer(io_server)
     io_server.register_topic(
         'Peripheral.UARTPublisher.write', uart_write_handler)
 
