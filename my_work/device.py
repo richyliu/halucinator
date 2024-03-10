@@ -6,11 +6,12 @@ import zmq
 from halucinator.external_devices.ioserver import IOServer
 from time import sleep
 
-global_heater_on = False
-
 def uart_write_handler(ioserver, msg):
     txt = msg['chars'].decode('latin-1')
     print(f'UART output: "{txt.strip()}"')
+
+HEATER_GPIO = '0x48000000_256'
+HEATER_ACTIVE_LOW = True
 
 class LocalServer(object):
     def __init__(self, ioserver):
@@ -20,11 +21,16 @@ class LocalServer(object):
         ioserver.register_topic('Peripheral.ExternalTimer.delay', self.delay)
         self.current_time = 0
 
+        # internal model values
+        self.global_heater_on = False
+        self.adc = 3735
+
     def write_handler(self, ioserver, msg):
-        global global_heater_on
-        state = msg['value'] == 1
-        global_heater_on = state
-        print('pin output:', state)
+        if msg['id'] == HEATER_GPIO:
+            state = msg['value'] == 1
+            if HEATER_ACTIVE_LOW:
+                state = not state
+            self.global_heater_on = state
 
     def delay(self, ioserver, msg):
         delay = msg['value']
@@ -32,7 +38,15 @@ class LocalServer(object):
         # update time
         d = {'value': self.current_time}
         self.ioserver.send_msg('Peripheral.ExternalTimer.update_time', d)
+        self.update_model()
 
+    def update_model(self):
+        # update model values
+        if self.global_heater_on:
+            self.adc += 1
+        else:
+            self.adc -= 1
+        self.ioserver.send_msg('Peripheral.ADC.ext_adc_change', {'id': '0', 'value': self.adc})
 
 def main():
     from argparse import ArgumentParser
@@ -51,15 +65,8 @@ def main():
     io_server.start()
 
     try:
-        adc = 3735
         while True:
-            d = {'id': '0', 'value': adc}
-            io_server.send_msg('Peripheral.ADC.ext_adc_change', d)
             sleep(1)
-            if global_heater_on:
-                adc += 1
-            else:
-                adc -= 1
     except KeyboardInterrupt:
         pass
     io_server.shutdown()
