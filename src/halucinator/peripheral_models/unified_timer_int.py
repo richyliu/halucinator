@@ -1,6 +1,11 @@
-# Copyright 2019 National Technology & Engineering Solutions of Sandia, LLC (NTESS). 
-# Under the terms of Contract DE-NA0003525 with NTESS, the U.S. Government retains 
-# certain rights in this software.
+"""
+A unified timer interrupt based system.
+
+This is designed to support emulating firmware that uses timer interrupt-driven
+code. Each interrupt is triggered by an external source, supplying new values (inputs)
+for any I/O or function reads. Function writes (outputs) are sent as they
+become available.
+"""
 
 from .peripheral import requires_tx_map, requires_rx_map, requires_interrupt_map
 from . import peripheral_server
@@ -56,12 +61,6 @@ class GPIO(object):
         GPIO.gpio_state[gpio_id] = value
 
     @classmethod
-    @peripheral_server.tx_msg
-    def report_pwm_val(cls, gpio_id, val):
-        msg = {'id': gpio_id, 'value': val}
-        log.debug("GPIO.report_pwm_val " + repr(msg))
-        return msg
-
-    @classmethod
     def read_pin(cls, pin_id):
         return GPIO.gpio_state[pin_id]
+

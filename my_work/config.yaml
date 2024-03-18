@@ -12,6 +12,9 @@ intercepts:
 - class: halucinator.bp_handlers.stm32f4.stm32f4_gpio.STM32F4GPIO
   function: HAL_GPIO_TogglePin
   symbol: HAL_GPIO_TogglePin
+- class: halucinator.bp_handlers.stm32f4.stm32f4_gpio.STM32F4GPIO
+  function: _report_pwm_val
+  symbol: set_heater
 # adc get value
 - class: halucinator.bp_handlers.stm32f4.stm32f4_adc.STM32F4ADC
   function: HAL_ADC_GetValue
@@ -57,12 +60,18 @@ intercepts:
 # ----------------------------------------------------------------------------
 
 # ------------------------------- Timers ------------------------------------
-- class: halucinator.bp_handlers.stm32f4.stm32f4_timer.STM32_Timer
+- class: halucinator.bp_handlers.stm32f4.stm32f4_tim_extern.STM32_TIM_Extern
   function: HAL_Delay
   symbol: HAL_Delay
-- class: halucinator.bp_handlers.stm32f4.stm32f4_timer.STM32_Timer
+- class: halucinator.bp_handlers.stm32f4.stm32f4_tim_extern.STM32_TIM_Extern
   function: HAL_GetTick
   symbol: HAL_GetTick
+- class: halucinator.bp_handlers.stm32f4.stm32f4_tim_extern.STM32_TIM_Extern
+  function: HAL_TIM_Base_Start_IT
+  symbol: HAL_TIM_Base_Start_IT
+- class: halucinator.bp_handlers.stm32f4.stm32f4_tim_extern.STM32_TIM_Extern
+  function: HAL_TIM_Base_Init
+  symbol: HAL_TIM_Base_Init
 # ----------------------------------------------------------------------------
 
 # -------------------------------Generic ------------------------------------

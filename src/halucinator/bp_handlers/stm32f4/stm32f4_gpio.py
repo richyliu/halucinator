@@ -86,6 +86,11 @@ class STM32F4GPIO(BPHandler):
         ret_val = self.model.read_pin(gpio_id)
         return True, ret_val
 
-    # HAL_StatusTypeDef HAL_GPIO_LockPin(GPIO_TypeDef* GPIOx, uint16_t GPIO_Pin);
-    # void HAL_GPIO_EXTI_IRQHandler(uint16_t GPIO_Pin);
-    # void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin);
+    @bp_handler(['_report_pwm_val'])
+    def report_pwm_val(self, qemu):
+        # TODO: support different GPIOs
+        gpio_id = '0x48000000_256'
+        val = qemu.read_memory(0x40012c00 + 0x34, 4) # TIM1->CCR1
+        self.model.report_pwm_val(gpio_id, val)
+        return True, 0
+

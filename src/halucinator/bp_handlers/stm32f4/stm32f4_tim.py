@@ -111,3 +111,9 @@ class STM32_TIM(BPHandler):
         log.info("Setting SysTick rate to %#08x" % rate)
         self.model.start_timer('SysTick', systick_irq, rate)
         return True, 0
+
+    @bp_handler(['HAL_GetTick'])
+    def get_tick(self, qemu, bp_addr):
+        ret_val = self.model.read_time()
+        return True, ret_val
+

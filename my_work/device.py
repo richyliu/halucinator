@@ -18,19 +18,30 @@ class LocalServer(object):
         self.ioserver = ioserver
         ioserver.register_topic('Peripheral.GPIO.write_pin', self.write_handler)
         ioserver.register_topic('Peripheral.GPIO.toggle_pin', self.write_handler)
+        ioserver.register_topic('Peripheral.GPIO.report_pwm_val', self.pwm_write_handler)
         ioserver.register_topic('Peripheral.ExternalTimer.delay', self.delay)
+        ioserver.register_topic('Peripheral.ExternalTimer.start_timer', self.start_timer)
         self.current_time = 0
+        self.timer_active = False
 
         # internal model values
-        self.global_heater_on = False
         self.adc = 3735
+
+        # input state values (initial)
+        self.heater_gpio = True
 
     def write_handler(self, ioserver, msg):
         if msg['id'] == HEATER_GPIO:
             state = msg['value'] == 1
             if HEATER_ACTIVE_LOW:
                 state = not state
-            self.global_heater_on = state
+            self.heater_gpio = state
+
+    def pwm_write_handler(self, ioserver, msg):
+        if msg['id'] == HEATER_GPIO:
+            state = msg['value']
+            print('pwm value:', state)
+            self.heater_gpio = state
 
     def delay(self, ioserver, msg):
         delay = msg['value']
@@ -40,13 +51,36 @@ class LocalServer(object):
         self.ioserver.send_msg('Peripheral.ExternalTimer.update_time', d)
         self.update_model()
 
-    def update_model(self):
+    def tick(self):
+        if not self.timer_active:
+            return
+
+        # wait until we have all inputs
+        if self.heater_gpio is None:
+            return
+
+        print('tick.')
+
         # update model values
-        if self.global_heater_on:
+        if self.heater_gpio > 1:
+            self.adc += self.heater_gpio/4096.0
+        if self.heater_gpio:
             self.adc += 1
         else:
             self.adc -= 1
-        self.ioserver.send_msg('Peripheral.ADC.ext_adc_change', {'id': '0', 'value': self.adc})
+        self.ioserver.send_msg('Peripheral.ADC.ext_adc_change', {'id': '0', 'value': int(self.adc)})
+
+        # TODO: calculate tick times from based on guest options
+        self.current_time += 10
+
+        # reset inputs before calling interrupt (which would get us the next values)
+        self.heater_gpio = None
+
+        self.ioserver.send_msg('Peripheral.ExternalTimer.tick_interrupt', {'value': self.current_time})
+
+    def start_timer(self, ioserver, msg):
+        print('starting timer')
+        self.timer_active = True
 
 def main():
     from argparse import ArgumentParser
@@ -58,7 +92,7 @@ def main():
     args = p.parse_args()
 
     io_server = IOServer(args.rx_port, args.tx_port)
-    LocalServer(io_server)
+    server = LocalServer(io_server)
     io_server.register_topic(
         'Peripheral.UARTPublisher.write', uart_write_handler)
 
@@ -66,7 +100,8 @@ def main():
 
     try:
         while True:
-            sleep(1)
+            server.tick()
+            sleep(0.5)
     except KeyboardInterrupt:
         pass
     io_server.shutdown()

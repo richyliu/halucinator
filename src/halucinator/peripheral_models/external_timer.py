@@ -2,6 +2,7 @@
 
 from .peripheral import requires_tx_map, requires_rx_map, requires_interrupt_map
 from . import peripheral_server
+from .interrupts import Interrupts
 
 import logging
 log = logging.getLogger(__name__)
@@ -12,6 +13,7 @@ import time
 class ExternalTimer(object):
 
     current_time = 0
+    irq_num = 21 # TIM16
 
     @classmethod
     @peripheral_server.tx_msg
@@ -20,7 +22,20 @@ class ExternalTimer(object):
             Device requests a delay of a certain time
         '''
         msg = {'value': value}
+        cls.current_time += value
         time.sleep(0.01)
+        return msg
+
+    @classmethod
+    @peripheral_server.tx_msg
+    def start_timer(cls):
+        msg = {'enable': True}
+        return msg
+
+    @classmethod
+    @peripheral_server.tx_msg
+    def stop_timer(cls, value):
+        msg = {'enable': True}
         return msg
 
     @classmethod
@@ -30,6 +45,12 @@ class ExternalTimer(object):
             Update internal timer to new time received
         '''
         cls.current_time = msg['value']
+
+    @classmethod
+    @peripheral_server.reg_rx_handler
+    def tick_interrupt(cls, msg):
+        cls.current_time = msg['value']
+        Interrupts.set_active_qmp(cls.irq_num)
 
     @classmethod
     def read_time(cls):
