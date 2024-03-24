@@ -79,7 +79,8 @@ def get_qemu_target(
     if log_basic_blocks == "irq":
         qemu.additional_args = [
             "-d",
-            "in_asm,exec,int,cpu,guest_errors,avatar,trace:nvic*",
+            # "in_asm,exec,int,cpu,guest_errors,avatar,trace:nvic*",
+            "in_asm,exec,int,cpu,guest_errors,avatar,trace:*",
             "-D",
             os.path.join(outdir, "qemu_asm.log"),
         ]
@@ -175,7 +176,7 @@ def fix_cortex_m_thumb_bit(config):
     """
 
     # Bug in QEMU about init stack pointer/entry point this works around
-    if config.machine.arch == "cortex-m3":
+    if config.machine.arch == "arm":
         mem = (
             config.memories["init_mem"]
             if "init_mem" in config.memories
@@ -299,7 +300,7 @@ def emulate_binary(
     config.initialize_target(qemu)
 
     # Work around Avatar-QEMU's improper init of Cortex-M3
-    if config.machine.arch == "cortex-m3":
+    if config.machine.arch == "arm":
         qemu.regs.cpsr |= 0x20  # Make sure the thumb bit is set
         qemu.regs.sp = config.machine.init_sp  # Set SP as Qemu doesn't init correctly
         qemu.set_vector_table_base(config.machine.vector_base)

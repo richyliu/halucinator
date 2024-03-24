@@ -526,4 +526,10 @@ class ARMQemuTarget(QemuTarget):
         instrs.append(self.assemble("ldr pc, [pc, #-4]"))  # PC is 2 instructions ahead
         instrs.append(struct.pack("<I", branch_target))  # Address of callee
         instructions = b"".join(instrs)
+
+        # Write to 2-byte aligned address in case LSB is set to indicate thumb
+        # mode. We do this because addr may have LSB set in the symbol table,
+        # but we want to clear it to write the "actual" address.
+        addr &= ~0x1
+
         self.write_memory(addr, 1, instructions, len(instructions), raw=True)

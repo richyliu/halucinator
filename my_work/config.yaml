@@ -1,5 +1,10 @@
 intercepts:
 
+- class: halucinator.bp_handlers.generic.newlib_syscalls.NewLibSysCalls
+  function: _write
+  symbol: $program_1$_write
+
+
 - class: halucinator.bp_handlers.IPythonShell
   function: HardFault_Handler
   symbol: HardFault_Handler
@@ -76,9 +81,9 @@ intercepts:
 
 # -------------------------------Generic ------------------------------------
 
-- class: halucinator.bp_handlers.ReturnZero
-  function: HAL_Init
-  symbol: HAL_Init
+# - class: halucinator.bp_handlers.ReturnZero
+#   function: HAL_Init
+#   symbol: HAL_Init
 - class: halucinator.bp_handlers.ReturnZero
   function: HAL_InitTick
   symbol: HAL_InitTick

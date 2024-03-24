@@ -13,7 +13,7 @@ import time
 class ExternalTimer(object):
 
     current_time = 0
-    irq_num = 21 # TIM16
+    irq_num = 21 + 16 # TIM16 + 16 for NVIC internal
 
     @classmethod
     @peripheral_server.tx_msg
@@ -30,6 +30,7 @@ class ExternalTimer(object):
     @peripheral_server.tx_msg
     def start_timer(cls):
         msg = {'enable': True}
+        Interrupts.enable_qmp(cls.irq_num)
         return msg
 
     @classmethod

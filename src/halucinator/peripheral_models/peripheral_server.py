@@ -159,7 +159,7 @@ def irq_enable_qmp(irq_num=1):
     Should not be used in BP handlers as creates race
     condition that may cause spurious interrupts
     """
-    __QEMU.irq_disable_qmp(irq_num)
+    __QEMU.irq_enable_qmp(irq_num)
 
 
 def irq_disable_qmp(irq_num=1):

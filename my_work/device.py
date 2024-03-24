@@ -98,10 +98,15 @@ def main():
 
     io_server.start()
 
+    # print('TODO: just testing')
+    # io_server.send_msg('Peripheral.ExternalTimer.tick_interrupt', {'value': 1234})
+    # io_server.shutdown()
+    # return
+
     try:
         while True:
-            server.tick()
             sleep(0.5)
+            server.tick()
     except KeyboardInterrupt:
         pass
     io_server.shutdown()
