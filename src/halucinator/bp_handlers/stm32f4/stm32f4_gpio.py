@@ -87,7 +87,7 @@ class STM32F4GPIO(BPHandler):
         return True, ret_val
 
     @bp_handler(['_report_pwm_val'])
-    def report_pwm_val(self, qemu):
+    def report_pwm_val(self, qemu, bp_addr):
         # TODO: support different GPIOs
         gpio_id = '0x48000000_256'
         val = qemu.read_memory(0x40012c00 + 0x34, 4) # TIM1->CCR1

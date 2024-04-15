@@ -33,6 +33,7 @@ class LocalServer(object):
     def write_handler(self, ioserver, msg):
         if msg['id'] == HEATER_GPIO:
             state = msg['value'] == 1
+            print('pin value:', state)
             if HEATER_ACTIVE_LOW:
                 state = not state
             self.heater_gpio = state
