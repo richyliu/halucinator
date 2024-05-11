@@ -76,8 +76,9 @@ int _read (int file, char * ptr, int len) {
 #define SCB_BASE            (SCS_BASE +  0x0D00UL)                    /*!< System Control Block Base Address */
 
 // from the original ELF program
-void* (*HAL_TIM_PeriodElapsedCallback)(void*) = (void*(*)(void*))0x080032ad;
-void* htim16 = (void*)0x20000218;
+void* (*HAL_TIM_PeriodElapsedCallback)(void*) = (void*(*)(void*))0x080035b5;
+// from htim16 obj
+void* htim16 = (void*)0x200002c4;
 
 void check_call(){
     printf("Check_Call Called\n");

@@ -8,40 +8,69 @@ from time import sleep
 
 def uart_write_handler(ioserver, msg):
     txt = msg['chars'].decode('latin-1')
-    print(f'UART output: "{txt.strip()}"')
+    # print(f'UART output: "{txt.strip()}"')
+    print(txt, end='', flush=True)
 
 HEATER_GPIO = '0x48000000_256'
-HEATER_ACTIVE_LOW = True
+
+# units are in Fahrenheit
+class HeaterModel():
+    def __init__(self):
+        # how quickly heat is gained with the heater
+        self.heat_gain_rate = 1.0
+        # how quickly heat is lost to the ambient environment
+        self.heat_loss_rate = 0.01
+
+        self.ambient = 70
+        self.temp = 96
+
+    def update(self, dt, heater_output):
+        assert dt > 0.0
+        assert 0 <= heater_output and heater_output <= 1.0
+
+        new_temp = self.temp
+        new_temp += heater_output*dt * self.heat_gain_rate
+        new_temp += (self.ambient - self.temp)*dt * self.heat_loss_rate
+        self.temp = new_temp
+
+        return self.temp
+
+    def to_raw(self, temp):
+        return 5*temp + 192.5
+
+    def update_to_raw(self, dt, heater_output):
+        v = self.update(dt, heater_output)
+        return self.to_raw(v)
 
 class LocalServer(object):
     def __init__(self, ioserver):
         self.ioserver = ioserver
         ioserver.register_topic('Peripheral.GPIO.write_pin', self.write_handler)
         ioserver.register_topic('Peripheral.GPIO.toggle_pin', self.write_handler)
-        ioserver.register_topic('Peripheral.GPIO.report_pwm_val', self.pwm_write_handler)
         ioserver.register_topic('Peripheral.ExternalTimer.delay', self.delay)
         ioserver.register_topic('Peripheral.ExternalTimer.start_timer', self.start_timer)
+        ioserver.register_topic('Peripheral.ZmqPeripheral.hw_io', self.hw_io_handler)
         self.current_time = 0
         self.timer_active = False
 
         # internal model values
-        self.adc = 3735
+        self.heater_model = HeaterModel()
 
         # input state values (initial)
         self.heater_gpio = True
 
+        # TODO: calculate tick times from based on guest options
+        self.timer_frequency = 76.5/1000.0
+
     def write_handler(self, ioserver, msg):
         if msg['id'] == HEATER_GPIO:
             state = msg['value'] == 1
-            print('pin value:', state)
-            if HEATER_ACTIVE_LOW:
-                state = not state
             self.heater_gpio = state
 
-    def pwm_write_handler(self, ioserver, msg):
-        if msg['id'] == HEATER_GPIO:
+    def hw_io_handler(self, ioserver, msg):
+        # pwm is at address 0x40012c34
+        if msg['offset'] == 0x12c34:
             state = msg['value']
-            print('pwm value:', state)
             self.heater_gpio = state
 
     def delay(self, ioserver, msg):
@@ -60,24 +89,21 @@ class LocalServer(object):
         if self.heater_gpio is None:
             return
 
-        print('tick.')
-
         # update model values
-        if self.heater_gpio > 1:
-            self.adc += self.heater_gpio/4096.0
-        if self.heater_gpio:
-            self.adc += 1
-        else:
-            self.adc -= 1
-        self.ioserver.send_msg('Peripheral.ADC.ext_adc_change', {'id': '0', 'value': int(self.adc)})
+        heater_proportion = self.heater_gpio/65535.0
+        dt = self.timer_frequency
 
-        # TODO: calculate tick times from based on guest options
-        self.current_time += 10
+        raw = self.heater_model.update_to_raw(dt, heater_proportion)
+
+        # print('heat:', int(self.heater_model.temp), 'raw:', raw, 'pwm output:', int(heater_proportion * 1000)/1000.0)
+        self.ioserver.send_msg('Peripheral.ADC.ext_adc_change', {'id': '0', 'value': int(raw)})
+
+        self.current_time += self.timer_frequency * 1000
 
         # reset inputs before calling interrupt (which would get us the next values)
         self.heater_gpio = None
 
-        self.ioserver.send_msg('Peripheral.ExternalTimer.tick_interrupt', {'value': self.current_time})
+        self.ioserver.send_msg('Peripheral.ExternalTimer.tick_interrupt', {'value': int(self.current_time)})
 
     def start_timer(self, ioserver, msg):
         print('starting timer')
@@ -106,7 +132,6 @@ def main():
 
     try:
         while True:
-            sleep(0.5)
             server.tick()
     except KeyboardInterrupt:
         pass

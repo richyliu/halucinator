@@ -56,12 +56,5 @@ class GPIO(object):
         GPIO.gpio_state[gpio_id] = value
 
     @classmethod
-    @peripheral_server.tx_msg
-    def report_pwm_val(cls, gpio_id, val):
-        msg = {'id': gpio_id, 'value': val}
-        log.debug("GPIO.report_pwm_val " + repr(msg))
-        return msg
-
-    @classmethod
     def read_pin(cls, pin_id):
         return GPIO.gpio_state[pin_id]
