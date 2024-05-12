@@ -17,8 +17,8 @@ HEATER_GPIO = '0x48000000_256'
 class HeaterModel():
     def __init__(self):
         # same as the defines in Core/Src/main.c for the thermostat
-        self.RAW_TO_TEMP_A = 0.2
-        self.RAW_TO_TEMP_B = -38.5
+        self.RAW_TO_TEMP_A = 0.15
+        self.RAW_TO_TEMP_B = -8.6
 
 
         # how quickly heat is gained with the heater
@@ -27,7 +27,7 @@ class HeaterModel():
         self.heat_loss_rate = 0.01
 
         self.ambient = 70
-        self.temp = 96
+        self.temp = 90
 
     def update(self, dt, heater_output):
         assert dt > 0.0
