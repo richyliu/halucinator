@@ -17,6 +17,9 @@ intercepts:
 - class: halucinator.bp_handlers.stm32f4.stm32f4_gpio.STM32F4GPIO
   function: HAL_GPIO_TogglePin
   symbol: HAL_GPIO_TogglePin
+- class: halucinator.bp_handlers.stm32f4.stm32f4_gpio.STM32F4GPIO
+  function: HAL_GPIO_ReadPin
+  symbol: HAL_GPIO_ReadPin
 # adc get value
 - class: halucinator.bp_handlers.stm32f4.stm32f4_adc.STM32F4ADC
   function: HAL_ADC_GetValue

@@ -16,6 +16,11 @@ HEATER_GPIO = '0x48000000_256'
 # units are in Fahrenheit
 class HeaterModel():
     def __init__(self):
+        # same as the defines in Core/Src/main.c for the thermostat
+        self.RAW_TO_TEMP_A = 0.2
+        self.RAW_TO_TEMP_B = -38.5
+
+
         # how quickly heat is gained with the heater
         self.heat_gain_rate = 1.0
         # how quickly heat is lost to the ambient environment
@@ -36,7 +41,7 @@ class HeaterModel():
         return self.temp
 
     def to_raw(self, temp):
-        return 5*temp + 192.5
+        return (temp - self.RAW_TO_TEMP_B)/self.RAW_TO_TEMP_A
 
     def update_to_raw(self, dt, heater_output):
         v = self.update(dt, heater_output)
