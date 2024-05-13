@@ -5,6 +5,7 @@
 import zmq
 from halucinator.external_devices.ioserver import IOServer
 from time import sleep
+import random
 
 def uart_write_handler(ioserver, msg):
     txt = msg['chars'].decode('latin-1')
@@ -17,14 +18,15 @@ HEATER_GPIO = '0x48000000_256'
 class HeaterModel():
     def __init__(self):
         # same as the defines in Core/Src/main.c for the thermostat
-        self.RAW_TO_TEMP_A = 0.15
-        self.RAW_TO_TEMP_B = -8.6
+        self.RAW_TO_TEMP_A = 0.175
+        self.RAW_TO_TEMP_B = -22.2
 
 
-        # how quickly heat is gained with the heater
-        self.heat_gain_rate = 1.0
         # how quickly heat is lost to the ambient environment
-        self.heat_loss_rate = 0.01
+        self.heat_loss_rate = 0.015
+        # how quickly heat is gained with the heater
+        # this ratio is desired for similar behavior as the physical model
+        self.heat_gain_rate = self.heat_loss_rate * 100
 
         self.ambient = 70
         self.temp = 90
@@ -45,6 +47,8 @@ class HeaterModel():
 
     def update_to_raw(self, dt, heater_output):
         v = self.update(dt, heater_output)
+        # random perturbations to simulate noise
+        v += (1 - 2*random.random()) * 0.8
         return self.to_raw(v)
 
 class LocalServer(object):

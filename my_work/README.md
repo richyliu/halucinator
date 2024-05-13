@@ -27,3 +27,7 @@ Update inject/main.c with locations. Use the following command to get these loca
 ```sh
 nm -an thermometer_2024_spring.elf | grep -E '(htim16|HAL_TIM_PeriodElapsedCallback)'
 ```
+
+### Update device.py with model values
+
+Update the A and B constants used to calculate temperature from raw reading in device.py
