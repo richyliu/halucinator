@@ -1,0 +1,91 @@
+intercepts:
+
+- class: halucinator.bp_handlers.generic.newlib_syscalls.NewLibSysCalls
+  function: _write
+  symbol: $program_1$_write
+
+
+- class: halucinator.bp_handlers.IPythonShell
+  function: HardFault_Handler
+  symbol: HardFault_Handler
+
+# ------------------------------- ADC and GPIO -------------------------------
+# gpio r/w
+- class: halucinator.bp_handlers.stm32f4.stm32f4_gpio.STM32F4GPIO
+  function: HAL_GPIO_WritePin
+  symbol: HAL_GPIO_WritePin
+- class: halucinator.bp_handlers.stm32f4.stm32f4_gpio.STM32F4GPIO
+  function: HAL_GPIO_TogglePin
+  symbol: HAL_GPIO_TogglePin
+- class: halucinator.bp_handlers.stm32f4.stm32f4_gpio.STM32F4GPIO
+  function: HAL_GPIO_ReadPin
+  symbol: HAL_GPIO_ReadPin
+# adc get value
+- class: halucinator.bp_handlers.stm32f4.stm32f4_adc.STM32F4ADC
+  function: HAL_ADC_GetValue
+  symbol: HAL_ADC_GetValue
+# ADC setup/misc that can be safely ignored
+- class: halucinator.bp_handlers.ReturnZero
+  function: HAL_ADC_Start
+  symbol: HAL_ADC_Start
+- class: halucinator.bp_handlers.ReturnZero
+  function: HAL_ADC_PollForConversion
+  symbol: HAL_ADC_PollForConversion
+# gpio setup that can be safely ignored
+- class: halucinator.bp_handlers.ReturnZero
+  function: HAL_GPIO_Init
+  symbol: HAL_GPIO_Init
+# ----------------------------------------------------------------------------
+
+# ------------------------------- Timers ------------------------------------
+- class: halucinator.bp_handlers.stm32f4.stm32f4_tim_extern.STM32_TIM_Extern
+  function: HAL_Delay
+  symbol: HAL_Delay
+- class: halucinator.bp_handlers.stm32f4.stm32f4_tim_extern.STM32_TIM_Extern
+  function: HAL_GetTick
+  symbol: HAL_GetTick
+- class: halucinator.bp_handlers.stm32f4.stm32f4_tim_extern.STM32_TIM_Extern
+  function: HAL_TIM_Base_Start_IT
+  symbol: HAL_TIM_Base_Start_IT
+- class: halucinator.bp_handlers.stm32f4.stm32f4_tim_extern.STM32_TIM_Extern
+  function: HAL_TIM_Base_Init
+  symbol: HAL_TIM_Base_Init
+# ----------------------------------------------------------------------------
+
+# -------------------------------Generic ------------------------------------
+
+# - class: halucinator.bp_handlers.ReturnZero
+#   function: HAL_Init
+#   symbol: HAL_Init
+- class: halucinator.bp_handlers.ReturnZero
+  function: HAL_InitTick
+  symbol: HAL_InitTick
+- class: halucinator.bp_handlers.ReturnZero
+  function: HAL_IncTick
+  symbol: HAL_IncTick
+- class: halucinator.bp_handlers.ReturnZero
+  function: HAL_MspInit
+  symbol: HAL_MspInit
+
+- class: halucinator.bp_handlers.ReturnZero
+  function: HAL_RCC_ClockConfig
+  symbol: HAL_RCC_ClockConfig
+- class: halucinator.bp_handlers.ReturnZero
+  function: HAL_RCC_OscConfig
+  symbol: HAL_RCC_OscConfig
+
+# ------------------------------- STM32F4-specific startup ------------------
+# these functions are called from SystemClock_config as part of the arduino setup code
+# https://sourcegraph.com/github.com/stm32duino/Arduino_Core_STM32/-/blob/variants/STM32F4xx/F446Z(C-E)(H-J-T)/generic_clock.c?L23-77
+- class: halucinator.bp_handlers.ReturnZero
+  function: HAL_PWREx_EnableOverDrive
+  symbol: HAL_PWREx_EnableOverDrive
+- class: halucinator.bp_handlers.ReturnZero
+  function: HAL_RCC_OscConfig
+  symbol: HAL_RCC_OscConfig
+- class: halucinator.bp_handlers.ReturnZero
+  function: HAL_RCC_ClockConfig
+  symbol: HAL_RCC_ClockConfig
+- class: halucinator.bp_handlers.ReturnZero
+  function: HAL_RCCEx_PeriphCLKConfig
+  symbol: HAL_RCCEx_PeriphCLKConfig
