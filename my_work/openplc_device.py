@@ -15,7 +15,7 @@ class LocalServer(object):
         ioserver.register_topic('Peripheral.ExternalTimer.delay', self.delay)
         ioserver.register_topic('Peripheral.ZmqPeripheral.hw_io', self.hw_io_handler)
         self.current_time = 0
-        self.tick_delay = 1000
+        self.tick_delay = 500
 
     def write_handler(self, ioserver, msg):
         print('got msg', msg)
@@ -29,12 +29,15 @@ class LocalServer(object):
         self.ioserver.send_msg('Peripheral.ExternalTimer.update_time', d)
 
     def hw_io_handler(self, ioserver, msg):
-        print('got hw io msg', msg)
-        pass
+        print('got hw io msg', msg, 'offset:', hex(msg['offset']))
 
     def tick(self):
         self.current_time += self.tick_delay
         print('updating tick to', self.current_time)
+        pin = 90
+        pin_set = int(random.random()*2)
+        print('setting pin to random value of', pin_set)
+        self.ioserver.send_msg('Peripheral.GPIO.ext_pin_change', {'id': pin, 'value': pin_set})
         # update time
         d = {'value': self.current_time}
         self.ioserver.send_msg('Peripheral.ExternalTimer.update_time', d)
@@ -56,7 +59,7 @@ def main():
     try:
         while True:
             server.tick()
-            sleep(server.tick_delay)
+            sleep(server.tick_delay/1000)
     except KeyboardInterrupt:
         pass
     io_server.shutdown()

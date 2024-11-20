@@ -89,3 +89,11 @@ intercepts:
 - class: halucinator.bp_handlers.ReturnZero
   function: HAL_RCCEx_PeriphCLKConfig
   symbol: HAL_RCCEx_PeriphCLKConfig
+
+# ------------------------------- Arduino GPIO ------------------------------
+- class: halucinator.bp_handlers.arduino.arduino_gpio.ArduinoGPIO
+  function: digitalRead
+  symbol: digitalRead
+- class: halucinator.bp_handlers.arduino.arduino_gpio.ArduinoGPIO
+  function: digitalWrite
+  symbol: digitalWrite
