@@ -1,0 +1,30 @@
+commit c71a3757bba3e5488927e9efe637019e0301ef28
+Author: Ubuntu <ubuntu@ip-172-31-37-213.us-east-2.compute.internal>
+Date:   Sun Mar 24 06:03:28 2024 +0000
+
+    halucinator: send nvic interrupt
+
+diff --git a/hw/avatar/irq_controller.c b/hw/avatar/irq_controller.c
+index 57d3a3cf69..ceca6e4c56 100644
+--- a/hw/avatar/irq_controller.c
++++ b/hw/avatar/irq_controller.c
+@@ -165,6 +165,11 @@ static void halucinator_irq_set_irq_setter(Object *obj, Visitor *v,
+         return;
+     }
+ 
++    // also send NVIC interrupt
++    ARMCPU *armcpu = ARM_CPU(qemu_get_cpu(0));
++    CPUARMState *env = &armcpu->env;
++    armv7m_nvic_set_pending(env->nvic, irq_num, false);
++
+     irq_handler(s, irq_num, 1);
+ 
+ }
+@@ -201,6 +206,7 @@ static void halucinator_irq_enable_irq_setter(Object *obj, Visitor *v,
+ 
+     printf("QEMU: Enabling IRQ %li", irq_num);
+     s->irq_regs[irq_num] |= IRQ_N_ENABLED;
++    s->status_reg |= GLOBAL_IRQ_ENABLED;
+     update_irq(s);
+ 
+ }
