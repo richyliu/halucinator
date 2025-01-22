@@ -1,6 +1,8 @@
-# Thermostat demo
+# OpenPLC Halucinator demo
 
-## Generating files
+Easiest way to set up is with docker. Use the docker file in the top level of the directory (../openplc_demo.Dockerfile). Before that, be sure to clone this repository and submodules (`git submodule update --init`).
+
+## Old notes
 
 ### Binary file
 
