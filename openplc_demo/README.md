@@ -1,6 +1,13 @@
 # OpenPLC Halucinator demo
 
-Easiest way to set up is with docker. Use the docker file in the top level of the directory (../openplc_demo.Dockerfile). Before that, be sure to clone this repository and submodules (`git submodule update --init`).
+Easiest way to set up is with docker. Use the docker file in the top level of the directory (../openplc_demo.Dockerfile). Before that, be sure to clone this repository and submodules:
+```sh
+git clone <this repo>
+git submodule update --init
+cd deps/avatar-qemu && git submodule update --init
+```
+
+The included openplc_target.bin contains seal-in flip-flop logic with pin 90 being set, pin 93 being reset, and pin 36 being the output.
 
 ## Old notes
 

@@ -39,7 +39,7 @@ RUN mkdir -p deps/build-qemu/ppc-softmmu
 # RUN pip install meson
 
 WORKDIR /root/halucinator/deps/build-qemu/arm-softmmu
-RUN /root/halucinator/deps/avatar-qemu/configure --target-list=arm-softmmu
+RUN /root/halucinator/deps/avatar-qemu/configure --with-git-submodules=ignore --target-list=arm-softmmu
 RUN make all -j`nproc`
 
 # WORKDIR /root/halucinator/deps/build-qemu/aarch64-softmmu
@@ -50,17 +50,10 @@ RUN make all -j`nproc`
 # RUN /root/halucinator/deps/avatar-qemu/configure --target-list=ppc-softmmu
 # RUN make all -j`nproc`
 
-# merge the rest of halucinator in
-WORKDIR /root
-COPY . /root/halucinator_other
-RUN rm -r deps && mv halucinator_other/* halucinator && rmdir halucinator_other
-
 # install depedencies first so it can be cached
-WORKDIR /root
-COPY src/requirements.txt /root/requirements.txt
-RUN pip install -r /root/requirements.txt
-
 WORKDIR /root/halucinator
+COPY src /root/halucinator/src
+RUN pip install -r src/requirements.txt
 RUN pip install -e deps/avatar2/
 RUN pip install -e src
 
@@ -68,5 +61,6 @@ WORKDIR  /root/halucinator
 RUN ln -s -T /usr/bin/gdb-multiarch /usr/bin/arm-none-eabi-gdb
 
 
+COPY openplc_demo /root/halucinator/openplc_demo
 WORKDIR /root/halucinator/openplc_demo
-CMD ./run.sh
+CMD ./openplc_run.sh
