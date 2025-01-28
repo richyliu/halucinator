@@ -1,0 +1,25 @@
+{
+  "name": "Thermostat",
+  "core_type": "zmq",
+  "log_level": "warning",
+  "time_delta": "76.5 ms",
+  "uninterruptible": false,
+  "terminate_on_error": true,
+  "publications": [
+    {
+      "global": true,
+      "key": "Thermostat/heater_output",
+      "type": "double",
+      "unit": "%"
+    }
+  ],
+  "subscriptions": [
+    {
+      "global": true,
+      "key": "HeatModel/temperature",
+      "type": "double",
+      "unit": "F"
+    }
+  ]
+}
+

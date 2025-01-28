@@ -1,0 +1,18 @@
+{
+  "name": "thermostat",
+  "broker": true,
+  "federates": [
+    {
+      "directory": ".",
+      "exec": "./thermostat.py",
+      "host": "localhost",
+      "name": "Thermostat"
+    },
+    {
+      "directory": ".",
+      "exec": "./heat_model.py",
+      "host": "localhost",
+      "name": "Heat model"
+    }
+  ]
+}
