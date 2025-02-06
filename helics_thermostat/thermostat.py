@@ -95,6 +95,15 @@ class ThermostatManager:
         while not self._booted:
             time.sleep(0.001)
 
+        # need to push the button once to trigger the code that enables the thermostat
+        pushbutton_id = '0x48000800_8192'
+        self.io_server.send_msg('Peripheral.GPIO.ext_pin_change', {'id': pushbutton_id, 'value': 0})
+        self.io_server.send_msg('Peripheral.ExternalTimer.tick_interrupt', {'value': 0})
+        time.sleep(1) # (hack) need to wait for the button press to be processed
+        self.io_server.send_msg('Peripheral.GPIO.ext_pin_change', {'id': pushbutton_id, 'value': 1})
+        self.io_server.send_msg('Peripheral.ExternalTimer.tick_interrupt', {'value': 100})
+        time.sleep(1)
+
         logger.info("Started halucinator process and IO server")
 
     def stop(self):
@@ -173,7 +182,7 @@ def main():
     thermostat.start()
 
     update_interval = 76.5/1000.0 # must match time_delta in helics_thermostat.json
-    total_interval = update_interval * 25
+    total_interval = update_interval * 50
     grantedtime = 0
 
     # Data collection lists

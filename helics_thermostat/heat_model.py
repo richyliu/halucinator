@@ -23,7 +23,7 @@ class HeaterModel:
         self.heat_gain_rate = self.heat_loss_rate * 100
 
         self.ambient = 70
-        self.temp = 90
+        self.temp = 94
 
     def update(self, dt, heater_output):
         """

@@ -45,16 +45,19 @@ RUN make all -j`nproc`
 
 # install depedencies first so it can be cached
 WORKDIR /root/halucinator
-COPY src /root/halucinator/src
-RUN pip install -r src/requirements.txt
+COPY src/requirements.txt /root/halucinator_requirements.txt
+RUN pip install -r /root/halucinator_requirements.txt
 RUN pip install -e deps/avatar2/
+
+# install helics
+RUN pip install 'helics[cli]'
+
+# install halucinator
+COPY src /root/halucinator/src
 RUN pip install -e src
 
 WORKDIR  /root/halucinator
 RUN ln -s -T /usr/bin/gdb-multiarch /usr/bin/arm-none-eabi-gdb
-
-# install helics
-RUN pip install 'helics[cli]'
 
 COPY helics_thermostat /root/halucinator/helics_thermostat
 WORKDIR /root/halucinator/helics_thermostat
