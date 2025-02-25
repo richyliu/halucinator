@@ -300,7 +300,7 @@ def emulate_binary(
     config.initialize_target(qemu)
 
     # Work around Avatar-QEMU's improper init of Cortex-M3
-    if config.machine.arch == "arm":
+    if config.machine.arch == "arm" or config.machine.arch == "cortex-m3":
         qemu.regs.cpsr |= 0x20  # Make sure the thumb bit is set
         qemu.regs.sp = config.machine.init_sp  # Set SP as Qemu doesn't init correctly
         qemu.set_vector_table_base(config.machine.vector_base)
