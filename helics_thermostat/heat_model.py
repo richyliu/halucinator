@@ -40,7 +40,7 @@ class HeaterModel:
 
         perturbed_temp = new_temp
         # random perturbations to simulate noise
-        perturbed_temp += (1 - 2*random.random()) * 0.1
+        perturbed_temp += (1 - 2*random.random()) * 0.2
 
         return perturbed_temp
 

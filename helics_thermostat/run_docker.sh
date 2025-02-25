@@ -10,4 +10,4 @@ docker run \
        --interactive \
        --tty \
        helics_thermostat \
-       /bin/sh -c 'cd /root/thermo; exec "./run_helics.sh"'
+       /root/thermo/run_helics.sh
