@@ -9,6 +9,10 @@ cd deps/avatar-qemu && git submodule update --init
 
 The included openplc_target.bin contains seal-in flip-flop logic with pin 90 being set, pin 93 being reset, and pin 36 being the output.
 
+## Building OpenPLC code
+
+The project is in `openplc_project/`. Use the "STM32 F446ZET Nucleo" target to build (click "Transfer program to PLC", choose the right Board Type, select "Compile Only", and click "Compile"). Output ELF will be in the indicated directory.
+
 ## Old notes
 
 ### Binary file
