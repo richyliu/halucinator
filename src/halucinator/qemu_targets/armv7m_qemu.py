@@ -31,9 +31,13 @@ class ARMv7mQemuTarget(ARMQemuTarget):
             :param addr(int): Address to write the branch code to
             :param branch_target: Address to branch too
         '''
+        freereg = 'r4'
+        if options is not None and 'freereg' in options:
+            freereg = options['freereg']
+
         instrs = []
-        instrs.append(self.assemble("ldr r4, [pc, #0]"))  # PC is 2 instructions ahead
-        instrs.append(self.assemble("bx r4"))
+        instrs.append(self.assemble("ldr " + freereg + ", [pc, #0]"))  # PC is 2 instructions ahead
+        instrs.append(self.assemble("bx " + freereg))
         instrs.append(struct.pack("<I", branch_target))  # Address of callee
         instructions = b"".join(instrs)
 

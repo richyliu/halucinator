@@ -191,7 +191,8 @@ class ELFProgram(object):
             if 'symbol' in intercept:
                 symbol = intercept['symbol'] if 'symbol' in intercept else None
                 hal_log.info(f"Setting C intercept Handler: {intercept['handler']} ({hex(handler_addr)}) intercepting: {symbol}({hex(put_addr)})")
-            qemu_target.write_branch(put_addr, handler_addr)
+            options = intercept['options'] if 'options' in intercept else None
+            qemu_target.write_branch(put_addr, handler_addr, options=options)
 
         return no_error
 
