@@ -1,7 +1,28 @@
-#! /bin/bash
-
-#source ~/.virtualenvs/halucinator/bin/activate
+#!/usr/bin/env bash
 
 cd "$(dirname "$0")"
 
-halucinator -c=openplc_config.yaml -c openplc_addrs.yaml -c openplc_memory.yaml --log_blocks=trace -n openplc "$@"
+ARGS=()
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        -g)
+            shift
+            ARGS+=(--gdb_server_port 3333)
+            ;;
+        -t)
+            shift
+            ARGS+=(--log_blocks=trace)
+            ;;
+        *)
+            ARGS+=("$1")
+            ;;
+    esac
+    shift
+done
+
+ARGS+=(--config openplc_config.yaml)
+ARGS+=(--config openplc_addrs.yaml)
+ARGS+=(--config openplc_memory.yaml)
+ARGS+=(--name openplc)
+
+halucinator "${ARGS[@]}"
