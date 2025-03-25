@@ -68,7 +68,7 @@ class ArgumentLogger(BPHandler):
             hal_log.info("Func: %s" % self.func_name)
             if self.num_args > 0:
                 args = [hex(self.target.get_arg(i)) for i in range(self.num_args)]
-                hal_log.info("Args: %s,".join(args))
+                hal_log.info("Args: %s" % ", ".join(args))
             if self.log_caller:
                 hal_log.info("Return addr: %#x" % self.target.get_ret_addr())
 

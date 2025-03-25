@@ -36,6 +36,9 @@ class ARMv7mQemuTarget(ARMQemuTarget):
             freereg = options['freereg']
 
         instrs = []
+        if addr & 0x2 != 0:
+            # align such that the load is 4-byte aligned
+            instrs.append(self.assemble("nop"))
         instrs.append(self.assemble("ldr " + freereg + ", [pc, #0]"))  # PC is 2 instructions ahead
         instrs.append(self.assemble("bx " + freereg))
         instrs.append(struct.pack("<I", branch_target))  # Address of callee
