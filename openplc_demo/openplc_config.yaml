@@ -9,6 +9,10 @@ intercepts:
   function: HardFault_Handler
   symbol: HardFault_Handler
 
+- class: halucinator.bp_handlers.IPythonShell
+  function: loop
+  symbol: loop
+
 # ------------------------------- ADC and GPIO -------------------------------
 # gpio r/w
 - class: halucinator.bp_handlers.stm32f4.stm32f4_gpio.STM32F4GPIO

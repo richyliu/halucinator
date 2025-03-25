@@ -2,7 +2,8 @@ architecture: ARMEL
 base_address: 0
 entry_point: 0
 symbols:
-  0x00080000: LD_MAX_SIZE
+  0x00000000: .ARM.attributes
+  0x00000000: .comment
   0x08000000: g_pfnVectors
   0x08000000: .isr_vector
   0x080001c4: .text
@@ -14,6 +15,7 @@ symbols:
   0x08000239: setupCycleDelay
   0x08000261: setup
   0x08000281: _Z12plcCycleTaskv
+  0x080002a5: loop
   0x080002cd: config_init__
   0x080002d1: config_run__
   0x080002d5: PROGRAM0_init__
@@ -222,6 +224,7 @@ symbols:
   0x08004191: _getpid
   0x08004195: SystemClock_Config
   0x08004271: _Z7premainv
+  0x08004281: main
   0x08004295: Reset_Handler
   0x080042a6: CopyDataInit
   0x080042ac: LoopCopyDataInit
@@ -305,6 +308,7 @@ symbols:
   0x08004619: millis
   0x0800461d: micros
   0x08004621: _Z14serialEventRunv
+  0x0800463d: init
   0x08004641: analogInputToPinName
   0x08004705: _ZN14HardwareSerial9availableEv
   0x08004715: _ZN14HardwareSerial4peekEv
@@ -324,6 +328,7 @@ symbols:
   0x08004a4f: _ZN6Stream9readBytesEPcj
   0x08004a71: _ZN6Stream14readBytesUntilEcPcj
   0x08004aa1: malloc
+  0x08004ab1: free
   0x08004ac1: sbrk_aligned
   0x08004b05: _malloc_r
   0x08004c05: __malloc_lock
@@ -362,18 +367,16 @@ symbols:
   0x0800588c: analogInputPin
   0x080058ec: digitalPin
   0x08005ac0: _ZTV14HardwareSerial
+  0x08005aec: .ARM
   0x08005aec: .ARM.extab
   0x08005aec: __exidx_start
   0x08005af4: __exidx_end
   0x08005af4: .init_array
   0x08005af4: __init_array_start
-  0x08005af4: .preinit_array
-  0x08005af4: __preinit_array_end
-  0x08005af4: __preinit_array_start
   0x08005af8: __frame_dummy_init_array_entry
   0x08005b04: __do_global_dtors_aux_fini_array_entry
   0x08005b04: .fini_array
   0x08005b04: __fini_array_start
   0x08005b04: __init_array_end
   0x08005b0c: __fini_array_end
-  0x08005b0c: _sidata
+  0x20020000: _estack
