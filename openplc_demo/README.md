@@ -13,34 +13,8 @@ The included openplc_target.bin contains seal-in flip-flop logic with pin 90 bei
 
 The project is in `openplc_project/`. Use the "STM32 F446ZET Nucleo" target to build (click "Transfer program to PLC", choose the right Board Type, select "Compile Only", and click "Compile"). Output ELF will be in the indicated directory.
 
-## Old notes
+Copy the file out (from /root/Downloads/OpenPLC_Editor/editor/arduino/examples/Baremetal/build).
 
-### Binary file
+## Setting up the demo
 
-generate `target.bin` with
-```sh
-arm-none-eabi-objcopy -O binary thermometer_2024_spring.elf target.bin
-```
-
-### Addresses
-
-to generate addrs.yaml, use `nm`
-```sh
-nm -an thermometer_2024_spring.elf | grep '0800.* . .\{5,\}' | awk -F' ' '{print "  0x" $1 ": " $3}' >> addrs.yaml
-```
-
-one liner version to prepend with correct header:
-```sh
-{ base64 -d <<< YXJjaGl0ZWN0dXJlOiBBUk1FTApiYXNlX2FkZHJlc3M6IDAKZW50cnlfcG9pbnQ6IDAKc3ltYm9sczoK; nm -an thermometer_2024_spring.elf | grep '0800.* . .\{5,\}' | awk -F' ' '{print "  0x" $1 ": " $3}'; }  > addrs.yaml
-```
-
-### Update inject with locations
-
-Update inject/main.c with locations. Use the following command to get these locations:
-```sh
-nm -an thermometer_2024_spring.elf | grep -E '(htim16|HAL_TIM_PeriodElapsedCallback)'
-```
-
-### Update device.py with model values
-
-Update the A and B constants used to calculate temperature from raw reading in device.py
+Run `./setup_openplc_bin.sh <ELF>` to convert the ELF program to a raw binary file for halucinator to use. This also updates the openplc_addrs.yaml file with the correct addresses based on the symbols.

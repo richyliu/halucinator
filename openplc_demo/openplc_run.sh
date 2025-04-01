@@ -11,7 +11,7 @@ while [[ $# -gt 0 ]]; do
             ;;
         -t)
             shift
-            ARGS+=(--log_blocks=trace)
+            ARGS+=(--log_blocks=regs)
             ;;
         *)
             ARGS+=("$1")
