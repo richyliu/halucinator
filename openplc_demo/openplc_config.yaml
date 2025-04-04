@@ -9,9 +9,10 @@ intercepts:
   function: HardFault_Handler
   symbol: HardFault_Handler
 
-- class: halucinator.bp_handlers.IPythonShell
+- class: halucinator.bp_handlers.PausableIPythonShell
   function: PROGRAM0_body__
   symbol: PROGRAM0_body__
+  registration_args: {stop_once: True}
 
 # ------------------------------- ADC and GPIO -------------------------------
 # gpio r/w

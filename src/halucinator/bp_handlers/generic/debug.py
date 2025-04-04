@@ -10,6 +10,7 @@ from os import system
 import logging
 import IPython
 from ..bp_handler import BPHandler, bp_handler
+from halucinator.peripheral_models import peripheral_server
 
 
 log = logging.getLogger(__name__)
@@ -72,6 +73,69 @@ class IPythonShell(BPHandler):
         """
         print("Available Debug Helpers:")
         print("    CortexMDebugHelper(target)")
+
+
+@peripheral_server.peripheral_model
+class PausableIPythonShell(IPythonShell):
+    """
+    The same as IPythonShell but only activates if enabled via zmq.
+
+    If stop_once is true, then the handler will deactivate itself after the first
+    time it is called (when active).
+
+    Note that the pause/resume is global to all instances of this class.
+
+    - class: halucinator.bp_handlers.PausableIPythonShell
+      function: <func_name> (Can be anything)
+      registration_args: {stop_once: False}
+      addr: <addr>
+    """
+
+    _active = False
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.stop_once = False
+
+    def register_handler(self, qemu, addr, func_name, stop_once=False):
+        """
+        Registers the handler with the peripheral server
+        """
+        super().register_handler(qemu, addr, func_name)
+        self.stop_once = stop_once
+        return type(self).start_shell
+
+    @bp_handler
+    def start_shell(self, target, addr):
+        """
+        Starts an IPython shell if activated
+        """
+        if not type(self)._active:
+            return False, None
+        ret = super().start_shell(target, addr)
+        if self.stop_once:
+            type(self)._active = False
+        return ret
+
+    @classmethod
+    @peripheral_server.reg_rx_handler
+    def pause(cls, msg=None):
+        """
+        Enable this handler to be activated
+        type is Peripheral.PausableIPythonShell.pause
+        """
+        print("PausableIPythonShell.pause", msg)
+        cls._active = True
+
+    @classmethod
+    @peripheral_server.reg_rx_handler
+    def resume(cls, msg=None):
+        """
+        Disable this handler to be deactivated
+        type is Peripheral.PausableIPythonShell.resume
+        """
+        print("PausableIPythonShell.resume", msg)
+        cls._active = False
 
 
 BFAR = 0xE000ED38
