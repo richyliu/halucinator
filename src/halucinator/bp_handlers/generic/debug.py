@@ -62,7 +62,7 @@ class IPythonShell(BPHandler):
         print(
             "You can look up a symbol using target.avatar.config.get_symbol_name(addr)"
         )
-        IPython.embed()
+        IPython.embed(confirm_exit=False)
 
         # return intercept, ret_val
         return False, ret_val

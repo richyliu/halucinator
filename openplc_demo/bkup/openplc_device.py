@@ -51,7 +51,7 @@ class LocalServer(object):
         self.current_time += self.tick_delay
         print('updating tick to', self.current_time)
 
-        self.toggle_pins()
+        # self.toggle_pins()
 
         # update time
         d = {'value': self.current_time}
@@ -71,15 +71,15 @@ def main():
 
     ioserver.start()
 
-    # print('setting pin to 1')
-    # ioserver.send_msg('Peripheral.GPIO.ext_pin_change', {'id': 90, 'value': 1})
-    # ioserver.send_msg('Peripheral.GPIO.ext_pin_change', {'id': 93, 'value': 1})
-    # d = {'value': 500}
-    # ioserver.send_msg('Peripheral.ExternalTimer.update_time', d)
+    print('setting pin to 1')
+    ioserver.send_msg('Peripheral.GPIO.ext_pin_change', {'id': 90, 'value': 1})
+    ioserver.send_msg('Peripheral.GPIO.ext_pin_change', {'id': 93, 'value': 1})
+    d = {'value': 500}
+    ioserver.send_msg('Peripheral.ExternalTimer.update_time', d)
 
     try:
         while True:
-            server.tick()
+            # server.tick()
             sleep(server.tick_delay/1000)
     except KeyboardInterrupt:
         pass
